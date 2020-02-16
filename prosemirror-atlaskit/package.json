@@ -7,6 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dist": "webpack",
+    "watch": "webpack -w",
     "dist:production": "npm i && webpack --mode=production"
   },
   "author": "",
@@ -30,6 +31,6 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
     "rollup-plugin-jsx": "^1.0.3",
-    "webpack-cli": "^3.3.4"
+    "webpack-cli": "^3.3.10"
   }
 }

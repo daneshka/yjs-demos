@@ -11,9 +11,11 @@ import { keymap } from 'prosemirror-keymap'
 import {
   Editor,
   EditorContext,
-  ReactEditorView
+  ReactEditorView,
+  WithEditorActions
 } from '@atlaskit/editor-core'
-
+import Button, { ButtonGroup } from '@atlaskit/button'
+import styled from 'styled-components'
 window.addEventListener('load', () => {
   const ydoc = new Y.Doc()
   const provider = new WebsocketProvider(`${location.protocol === 'http:' ? 'ws:' : 'wss:'}${location.host}`, 'prosemirror', ydoc)
@@ -29,6 +31,43 @@ window.addEventListener('load', () => {
       connectBtn.textContent = 'Disconnect'
     }
   })
+
+  const SaveAndCancelButtons = props => (
+    <ButtonGroup>
+      <Button
+        appearance="primary"
+        onClick={() =>
+          props.editorActions
+            .getValue()
+            // eslint-disable-next-line no-console
+            .then(value => console.log(value))
+        }
+      >
+        Publish
+      </Button>
+      <Button
+        appearance="subtle"
+        // eslint-disable-next-line:jsx-no-lambda
+        onClick={() => props.editorActions.clear()}
+      >
+        Close
+      </Button>
+    </ButtonGroup>
+  )
+  const TitleInput = styled.input`
+  border: none;
+  outline: none;
+  font-size: 2.07142857em;
+  margin: 0 0 21px;
+  padding: 0;
+
+  &::placeholder {
+    color: red;
+  }
+`
+  TitleInput.displayName = 'TitleInput'
+
+
 
   /**
    * The Atlasian Editor does not provide a method to add custom ProseMirror plugins.
@@ -47,11 +86,11 @@ window.addEventListener('load', () => {
             plugin: function (_a) {
               return ySyncPlugin(type)
             }
-          }, {
-            name: 'y-shared-cursors',
-            plugin: function (_a) {
-              return yCursorPlugin(provider.awareness)
-            }
+            // }, {
+            //   name: 'y-shared-cursors',
+            //   plugin: function (_a) {
+            //     return yCursorPlugin(provider.awareness)
+            //   }
           }, {
             name: 'y-undo-plugin',
             plugin: yUndoPlugin
@@ -67,44 +106,70 @@ window.addEventListener('load', () => {
       }
     }])
   }
-
+  const handleTitleOnFocus = () => this.setState({ disabled: true })
+  const handleTitleOnBlur = () => this.setState({ disabled: false })
+  const handleTitleRef = ref => {
+    if (ref) {
+      ref.focus()
+    }
+  }
   class ExampleEditorFullPage extends React.Component {
-    render () {
+    render() {
       return (
+        <div>salam be hame2
         <Editor
-          defaultValue={this.props.defaultValue}
-          appearance='full-page'
-          allowCodeBlocks={{ enableKeybindingsForIDE: true }}
-          allowLists
-          allowBreakout
-          allowTextColor
-          allowTextAlignment
-          allowIndentation
-          allowTables={{
-            allowColumnResizing: true,
-            allowMergeCells: true,
-            allowNumberColumn: true,
-            allowBackgroundColor: true,
-            allowHeaderRow: true,
-            allowHeaderColumn: true,
-            permittedLayouts: 'all',
-            stickToolbarToBottom: true
-          }}
-          allowJiraIssue
-          allowUnsupportedContent
-          allowPanel
-          allowStatus
-          allowExtension={{
-            allowBreakout: true
-          }}
-          allowRule
-          allowDate
-          allowLayouts
-          allowDynamicTextSizing
-          placeholder='Write something...'
-          shouldFocus
-          disabled={false}
-        />
+            defaultValue={this.props.defaultValue}
+            appearance='full-page'
+            allowCodeBlocks={{ enableKeybindingsForIDE: true }}
+            allowLists
+            allowBreakout
+            allowTextColor
+            allowTextAlignment
+            allowIndentation
+            allowTables={{
+              allowColumnResizing: true,
+              allowMergeCells: true,
+              allowNumberColumn: true,
+              allowBackgroundColor: true,
+              allowHeaderRow: true,
+              allowHeaderColumn: true,
+              permittedLayouts: 'all',
+              stickToolbarToBottom: true
+            }}
+            allowJiraIssue
+            allowUnsupportedContent
+            allowPanel
+            allowStatus
+            allowExtension={{
+              allowBreakout: true
+            }}
+            allowRule
+
+            allowLayouts
+            allowDynamicTextSizing
+            placeholder='Write something...'
+            shouldFocus
+            disabled={false}
+            contentComponents={
+              <TitleInput
+                innerRef={handleTitleRef}
+                // tslint:disable-next-line:jsx-no-lambda
+                onBlur={handleTitleOnBlur}
+                onFocus={handleTitleOnFocus}
+                placeholder="Give this page a title..."
+              />
+            }
+
+            primaryToolbarComponents={
+              <WithEditorActions
+                // tslint:disable-next-line:jsx-no-lambda
+                render={actions => (
+                  <SaveAndCancelButtons editorActions={actions} />
+                )}
+              />
+            }
+          />
+        </div>
       )
     }
   }

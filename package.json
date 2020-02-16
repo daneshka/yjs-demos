@@ -6,7 +6,7 @@
   "scripts": {
     "dist": "rm -rf dist && rollup -c && webpack && cd prosemirror-atlaskit && npm run dist",
     "dist:production": "rm -rf dist && PRODUCTION=1 rollup -c && webpack --mode=production && cd prosemirror-atlaskit && npm run dist:production",
-    "watch": "concurrently 'rollup -wc' 'webpack -w'",
+    "watch": "concurrently \"rollup -wc\" \"webpack -w\"",
     "start": "npm run dist && node ./demo-server.js",
     "start:production": "export PRODUCTION=1; npm run dist:production; gzip dist/* --keep; node ./demo-server.js",
     "now-build": "npm run dist:production",
